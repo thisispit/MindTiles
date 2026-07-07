@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, RotateCcw, Timer, Hash } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -217,12 +217,19 @@ export function GamePage() {
   const { state, navigate, updateStats } = useApp();
   const { settings, stats, gameConfig } = state;
   const { playFlip, playMatch, playVictory } = useSound(settings.soundEnabled);
-  const { elapsed, start: startTimer, reset: resetTimer } = useTimer();
+  const { elapsed, start: startTimer, pause: pauseTimer, reset: resetTimer } = useTimer();
+  const elapsedRef = useRef(elapsed);
+  const [resultTimeSeconds, setResultTimeSeconds] = useState<number | null>(null);
+  const [resultBestTimeSeconds, setResultBestTimeSeconds] = useState<number | null>(null);
+
+  useEffect(() => {
+    elapsedRef.current = elapsed;
+  }, [elapsed]);
 
   const config = DIFFICULTY_CONFIG[gameConfig.difficulty];
 
   const handleWin = useCallback((moves: number, accuracy: number) => {
-    resetTimer();
+    const finalTimeSeconds = elapsedRef.current;
     playVictory();
     confetti({
       particleCount: 90,
@@ -236,12 +243,15 @@ export function GamePage() {
       date: new Date().toISOString(),
       difficulty: gameConfig.difficulty,
       moves,
-      timeSeconds: elapsed,
+      timeSeconds: finalTimeSeconds,
       won: true,
       accuracy,
     };
-    updateStats(recordSession(session, stats));
-  }, [elapsed, gameConfig.difficulty, playVictory, resetTimer, stats, updateStats]);
+    const nextStats = recordSession(session, stats);
+    updateStats(nextStats);
+    setResultTimeSeconds(finalTimeSeconds);
+    setResultBestTimeSeconds(nextStats.bestTimeSeconds);
+  }, [gameConfig.difficulty, playVictory, stats, updateStats]);
 
   const { gameState, flipCard, restart } = useGame({
     difficulty: gameConfig.difficulty,
@@ -253,7 +263,18 @@ export function GamePage() {
     onWin: handleWin,
   });
 
-  const handleRestart = () => { resetTimer(); restart(); };
+  useEffect(() => {
+    if (gameState.gameWon) {
+      pauseTimer();
+    }
+  }, [gameState.gameWon, pauseTimer]);
+
+  const handleRestart = () => {
+    setResultTimeSeconds(null);
+    setResultBestTimeSeconds(null);
+    resetTimer();
+    restart();
+  };
 
   // Card size based on grid + viewport
   const gridCols = config.grid;
@@ -353,9 +374,9 @@ export function GamePage() {
         {gameState.gameWon && (
           <WinModal
             moves={gameState.moves}
-            timeSeconds={elapsed}
+            timeSeconds={resultTimeSeconds ?? elapsed}
             accuracy={computeAccuracy(gameState.moves, gameState.totalPairs)}
-            bestTime={stats.bestTimeSeconds}
+            bestTime={resultBestTimeSeconds ?? stats.bestTimeSeconds}
             onPlayAgain={handleRestart}
             onHome={() => navigate('home')}
           />
