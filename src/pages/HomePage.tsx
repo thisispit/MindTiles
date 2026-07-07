@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { ParticleBackground } from '../components/ParticleBackground';
 
@@ -8,7 +9,7 @@ interface NavTile {
   id: string;
   label: string;
   sublabel: string;
-  page: 'game' | 'challenge' | 'journey' | 'studio';
+  page: 'game' | 'challenge' | 'journey' | 'settings';
   position: 'tl' | 'tr' | 'bl' | 'br';
   icon: React.ReactNode;
 }
@@ -32,10 +33,10 @@ const JourneyIcon = () => (
   </svg>
 );
 
-const StudioIcon = () => (
+const SettingsIcon = () => (
   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
     <circle cx="14" cy="14" r="4" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M14 3V7M14 21V25M3 14H7M21 14H25M6 6L8.8 8.8M19.2 19.2L22 22M6 22L8.8 19.2M19.2 8.8L22 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M14 4.5V6.8M14 21.2V23.5M4.5 14H6.8M21.2 14H23.5M7.1 7.1L8.7 8.7M19.3 19.3L20.9 20.9M7.1 20.9L8.7 19.3M19.3 8.7L20.9 7.1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
 
@@ -65,12 +66,12 @@ const tiles: NavTile[] = [
     icon: <JourneyIcon />,
   },
   {
-    id: 'studio',
-    label: 'Studio',
-    sublabel: 'Themes & settings',
-    page: 'studio',
+    id: 'settings',
+    label: 'Settings',
+    sublabel: 'Preferences & about',
+    page: 'settings',
     position: 'br',
-    icon: <StudioIcon />,
+    icon: <SettingsIcon />,
   },
 ];
 
@@ -171,6 +172,7 @@ function NavTileButton({ tile, index, onClick }: { tile: NavTile; index: number;
 
 export function HomePage() {
   const { navigate } = useApp();
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
@@ -243,16 +245,128 @@ export function HomePage() {
         </div>
 
         {/* Quote */}
-        <motion.p
-          className="text-center text-sm text-[#4A5568] font-light tracking-widest uppercase"
+        <motion.div
+          className="flex items-center gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          style={{ letterSpacing: '0.12em' }}
         >
-          Every tile tells a story.
-        </motion.p>
+          <motion.span
+            className="h-px w-10 bg-gradient-to-r from-transparent via-[#374151] to-transparent"
+            aria-hidden="true"
+            animate={{ opacity: [0.4, 0.9, 0.4] }}
+            transition={{ duration: 3.6, repeat: Infinity, repeatDelay: 6, ease: 'easeInOut' }}
+          />
+          <motion.p
+            className="text-center text-[11px] text-[#4A5568] font-light tracking-[0.22em] uppercase whitespace-nowrap"
+            style={{ letterSpacing: '0.22em' }}
+            animate={{
+              color: ['#4A5568', '#94A3B8', '#4A5568'],
+              textShadow: [
+                '0 0 0px rgba(20,184,166,0)',
+                '0 0 12px rgba(20,184,166,0.28)',
+                '0 0 0px rgba(20,184,166,0)',
+              ],
+            }}
+            transition={{ duration: 3.6, repeat: Infinity, repeatDelay: 6, ease: 'easeInOut' }}
+          >
+            Every tile tells a story.
+          </motion.p>
+          <motion.span
+            className="h-px w-10 bg-gradient-to-r from-transparent via-[#374151] to-transparent"
+            aria-hidden="true"
+            animate={{ opacity: [0.4, 0.9, 0.4] }}
+            transition={{ duration: 3.6, repeat: Infinity, repeatDelay: 6, ease: 'easeInOut', delay: 0.15 }}
+          />
+        </motion.div>
+
+        <motion.button
+          type="button"
+          onClick={() => setShowHowToPlay(true)}
+          className="mt-5 rounded-full px-4 py-2 text-xs font-medium text-[#94A3B8] transition-colors hover:text-[#F8FAFC]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.5 }}
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            backdropFilter: 'blur(10px)',
+          }}
+          aria-label="Open how to play instructions"
+        >
+          How to Play
+        </motion.button>
       </main>
+
+      <AnimatePresence>
+        {showHowToPlay && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-6 py-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{ background: 'rgba(11,15,20,0.78)', backdropFilter: 'blur(8px)' }}
+              onClick={() => setShowHowToPlay(false)}
+            />
+
+            <motion.div
+              className="relative z-10 w-full max-w-sm rounded-[18px] p-6"
+              initial={{ y: 12, scale: 0.98 }}
+              animate={{ y: 0, scale: 1 }}
+              exit={{ y: 10, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              style={{
+                background: 'rgba(19,26,34,0.96)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.45)',
+              }}
+            >
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <p className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-[0.18em]">How to Play</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowHowToPlay(false)}
+                  className="text-xs text-[#4A5568] hover:text-[#94A3B8] transition-colors"
+                  aria-label="Close how to play instructions"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-3 rounded-[14px] px-4 py-3.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#14B8A6]/10 text-xs font-semibold text-[#14B8A6]">1</div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#F8FAFC]">Start a game</p>
+                    <p className="text-xs text-[#94A3B8] font-light leading-relaxed mt-0.5">Open <span className="text-[#F8FAFC]">Begin</span> and flip two tiles to find matching pairs.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-[14px] px-4 py-3.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0EA5E9]/10 text-xs font-semibold text-[#0EA5E9]">2</div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#F8FAFC]">Pick a level</p>
+                    <p className="text-xs text-[#94A3B8] font-light leading-relaxed mt-0.5">Use <span className="text-[#F8FAFC]">Challenge</span> to choose the difficulty that fits you best.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-[14px] px-4 py-3.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F97316]/10 text-xs font-semibold text-[#F97316]">3</div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#F8FAFC]">Track progress</p>
+                    <p className="text-xs text-[#94A3B8] font-light leading-relaxed mt-0.5">Check <span className="text-[#F8FAFC]">Journey</span> for stats and use <span className="text-[#F8FAFC]">Settings</span> anytime.</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <motion.footer
@@ -264,7 +378,7 @@ export function HomePage() {
         <span>MindTiles v1.0</span>
         <span>·</span>
         <a
-          href="https://github.com"
+          href="https://github.com/thisispit/MindTiles"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 hover:text-[#94A3B8] transition-colors duration-200"
@@ -273,8 +387,6 @@ export function HomePage() {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
           <span>GitHub</span>
         </a>
-        <span>·</span>
-        <span>Built with React + Vite</span>
       </motion.footer>
     </div>
   );

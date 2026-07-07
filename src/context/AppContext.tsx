@@ -15,7 +15,6 @@ const initialState: AppState = {
   currentPage: 'home',
   gameConfig: {
     difficulty: 'focus',
-    theme: 'nature',
     gridSize: 4,
   },
   settings: loadSettings(),
@@ -76,11 +75,11 @@ const AppContext = createContext<AppContextValue | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const navigate = useCallback((page: Page) => dispatch({ type: 'NAVIGATE', page }), []);
+  const navigate     = useCallback((page: Page) => dispatch({ type: 'NAVIGATE', page }), []);
   const setGameConfig = useCallback((config: Partial<GameConfig>) => dispatch({ type: 'SET_GAME_CONFIG', config }), []);
   const updateSettings = useCallback((settings: Partial<AppSettings>) => dispatch({ type: 'UPDATE_SETTINGS', settings }), []);
-  const updateStats = useCallback((stats: Stats) => dispatch({ type: 'UPDATE_STATS', stats }), []);
-  const resetStats = useCallback(() => dispatch({ type: 'RESET_STATS' }), []);
+  const updateStats  = useCallback((stats: Stats) => dispatch({ type: 'UPDATE_STATS', stats }), []);
+  const resetStats   = useCallback(() => dispatch({ type: 'RESET_STATS' }), []);
 
   return (
     <AppContext.Provider value={{ state, navigate, setGameConfig, updateSettings, updateStats, resetStats }}>

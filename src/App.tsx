@@ -5,7 +5,7 @@ import { HomePage } from './pages/HomePage';
 import { GamePage } from './pages/GamePage';
 import { ChallengePage } from './pages/ChallengePage';
 import { JourneyPage } from './pages/JourneyPage';
-import { StudioPage } from './pages/StudioPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 // Page transition wrapper
 const pageVariants = {
@@ -38,7 +38,7 @@ function AppRouter() {
         {currentPage === 'game' && <GamePage />}
         {currentPage === 'challenge' && <ChallengePage />}
         {currentPage === 'journey' && <JourneyPage />}
-        {currentPage === 'studio' && <StudioPage />}
+        {currentPage === 'settings' && <SettingsPage />}
       </motion.div>
     </AnimatePresence>
   );

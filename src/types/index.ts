@@ -1,32 +1,20 @@
 // Core type definitions for MindTiles
 
-export type Page = 'home' | 'game' | 'challenge' | 'journey' | 'studio';
+export type Page = 'home' | 'game' | 'challenge' | 'journey' | 'settings';
 
 export type Difficulty = 'focus' | 'recall' | 'master' | 'legend';
-
-export type CardTheme =
-  | 'nature'
-  | 'space'
-  | 'technology'
-  | 'ocean'
-  | 'architecture'
-  | 'animals'
-  | 'food'
-  | 'minimal'
-  | 'abstract';
 
 export interface CardData {
   id: string;
   pairId: string;
-  symbol: string; // SVG component name
+  symbol: string;
   isFlipped: boolean;
   isMatched: boolean;
 }
 
 export interface GameConfig {
   difficulty: Difficulty;
-  theme: CardTheme;
-  gridSize: number; // 4 | 6 | 8 | 10
+  gridSize: number;
 }
 
 export interface GameSession {
@@ -54,13 +42,4 @@ export interface Stats {
 export interface AppSettings {
   soundEnabled: boolean;
   animationsEnabled: boolean;
-  theme: CardTheme;
-  colorScheme: 'dark'; // only dark for now
-}
-
-export interface AppState {
-  currentPage: Page;
-  gameConfig: GameConfig;
-  settings: AppSettings;
-  stats: Stats;
 }

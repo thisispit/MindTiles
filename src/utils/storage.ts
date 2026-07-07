@@ -1,6 +1,6 @@
 import type { Stats, AppSettings, GameSession } from '../types';
 
-const STATS_KEY = 'mindtiles_stats';
+const STATS_KEY    = 'mindtiles_stats';
 const SETTINGS_KEY = 'mindtiles_settings';
 
 export const defaultStats: Stats = {
@@ -18,8 +18,6 @@ export const defaultStats: Stats = {
 export const defaultSettings: AppSettings = {
   soundEnabled: true,
   animationsEnabled: true,
-  theme: 'nature',
-  colorScheme: 'dark',
 };
 
 export function loadStats(): Stats {
@@ -33,11 +31,7 @@ export function loadStats(): Stats {
 }
 
 export function saveStats(stats: Stats): void {
-  try {
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  } catch {
-    console.warn('Failed to save stats to localStorage');
-  }
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch {}
 }
 
 export function loadSettings(): AppSettings {
@@ -51,29 +45,22 @@ export function loadSettings(): AppSettings {
 }
 
 export function saveSettings(settings: AppSettings): void {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  } catch {
-    console.warn('Failed to save settings to localStorage');
-  }
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch {}
 }
 
-export function recordSession(session: GameSession, currentStats: Stats): Stats {
-  const sessions = [session, ...currentStats.sessions].slice(0, 50);
-  const wins = session.won ? currentStats.wins + 1 : currentStats.wins;
-  const streak = session.won ? currentStats.streak + 1 : 0;
-  const bestStreak = Math.max(streak, currentStats.bestStreak);
-
+export function recordSession(session: GameSession, current: Stats): Stats {
+  const sessions  = [session, ...current.sessions].slice(0, 50);
+  const wins      = session.won ? current.wins + 1 : current.wins;
+  const streak    = session.won ? current.streak + 1 : 0;
+  const bestStreak = Math.max(streak, current.bestStreak);
   const bestTimeSeconds =
     session.won
-      ? currentStats.bestTimeSeconds === null
+      ? current.bestTimeSeconds === null
         ? session.timeSeconds
-        : Math.min(currentStats.bestTimeSeconds, session.timeSeconds)
-      : currentStats.bestTimeSeconds;
-
-  const gamesPlayed = currentStats.gamesPlayed + 1;
-  const totalAccuracy =
-    (currentStats.totalAccuracy * currentStats.gamesPlayed + session.accuracy) / gamesPlayed;
+        : Math.min(current.bestTimeSeconds, session.timeSeconds)
+      : current.bestTimeSeconds;
+  const gamesPlayed = current.gamesPlayed + 1;
+  const totalAccuracy = (current.totalAccuracy * current.gamesPlayed + session.accuracy) / gamesPlayed;
 
   return {
     gamesPlayed,
@@ -81,8 +68,8 @@ export function recordSession(session: GameSession, currentStats: Stats): Stats 
     streak,
     bestStreak,
     bestTimeSeconds,
-    totalTimeSeconds: currentStats.totalTimeSeconds + session.timeSeconds,
-    totalMoves: currentStats.totalMoves + session.moves,
+    totalTimeSeconds: current.totalTimeSeconds + session.timeSeconds,
+    totalMoves: current.totalMoves + session.moves,
     totalAccuracy,
     sessions,
   };
@@ -105,8 +92,8 @@ export function computeAccuracy(moves: number, pairs: number): number {
 
 export function computeMemoryScore(stats: Stats): number {
   if (stats.gamesPlayed === 0) return 0;
-  const winRate = stats.wins / stats.gamesPlayed;
-  const avgAccuracy = stats.totalAccuracy / 100;
+  const winRate    = stats.wins / stats.gamesPlayed;
+  const avgAcc     = stats.totalAccuracy / 100;
   const streakBonus = Math.min(stats.bestStreak * 5, 25);
-  return Math.round(winRate * 50 + avgAccuracy * 25 + streakBonus);
+  return Math.round(winRate * 50 + avgAcc * 25 + streakBonus);
 }

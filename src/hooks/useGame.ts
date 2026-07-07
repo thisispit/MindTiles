@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import type { CardData } from '../types';
-import type { CardTheme, Difficulty } from '../types';
+import type { CardData, Difficulty } from '../types';
 import { generateCards, DIFFICULTY_CONFIG } from '../data/gameData';
 import { computeAccuracy } from '../utils/storage';
 
@@ -12,23 +11,22 @@ export interface GameState {
   gameStarted: boolean;
   gameWon: boolean;
   flippedIds: string[];
-  isLocked: boolean; // prevent clicks during evaluation
+  isLocked: boolean;
 }
 
 interface UseGameOptions {
   difficulty: Difficulty;
-  theme: CardTheme;
   onMatch?: () => void;
   onMismatch?: () => void;
   onFlip?: () => void;
   onWin?: (moves: number, accuracy: number) => void;
 }
 
-export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin }: UseGameOptions) {
+export function useGame({ difficulty, onMatch, onMismatch, onFlip, onWin }: UseGameOptions) {
   const config = DIFFICULTY_CONFIG[difficulty];
 
   const initState = (): GameState => ({
-    cards: generateCards(config.pairs, theme),
+    cards: generateCards(config.pairs),
     moves: 0,
     matchedPairs: 0,
     totalPairs: config.pairs,
@@ -43,7 +41,6 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
 
   const flipCard = useCallback((cardId: string) => {
     setGameState(prev => {
-      // Guard conditions
       if (prev.isLocked) return prev;
       if (prev.flippedIds.includes(cardId)) return prev;
       if (prev.flippedIds.length >= 2) return prev;
@@ -54,9 +51,7 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
       onFlip?.();
 
       const newFlipped = [...prev.flippedIds, cardId];
-      const newCards = prev.cards.map(c =>
-        c.id === cardId ? { ...c, isFlipped: true } : c,
-      );
+      const newCards   = prev.cards.map(c => c.id === cardId ? { ...c, isFlipped: true } : c);
 
       const newState: GameState = {
         ...prev,
@@ -65,7 +60,6 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
         gameStarted: true,
       };
 
-      // Evaluate pair
       if (newFlipped.length === 2) {
         const [idA, idB] = newFlipped;
         const cardA = newCards.find(c => c.id === idA)!;
@@ -73,19 +67,16 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
         const newMoves = prev.moves + 1;
 
         if (cardA.pairId === cardB.pairId) {
-          // Match!
+          // ✅ Match
           const matchedCards = newCards.map(c =>
             c.id === idA || c.id === idB ? { ...c, isMatched: true } : c,
           );
           const newMatched = prev.matchedPairs + 1;
-          const won = newMatched === prev.totalPairs;
-          const accuracy = computeAccuracy(newMoves, newMatched);
+          const won        = newMatched === prev.totalPairs;
+          const accuracy   = computeAccuracy(newMoves, newMatched);
 
           setTimeout(() => onMatch?.(), 50);
-
-          if (won) {
-            setTimeout(() => onWin?.(newMoves, accuracy), 600);
-          }
+          if (won) setTimeout(() => onWin?.(newMoves, accuracy), 600);
 
           return {
             ...newState,
@@ -97,12 +88,10 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
             isLocked: false,
           };
         } else {
-          // Mismatch — lock and flip back after delay
+          // ❌ Mismatch
           setTimeout(() => onMismatch?.(), 50);
-
           lockTimerRef.current && clearTimeout(lockTimerRef.current);
 
-          // We schedule the flip-back outside setState
           setTimeout(() => {
             setGameState(s => ({
               ...s,
@@ -114,11 +103,7 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
             }));
           }, 850);
 
-          return {
-            ...newState,
-            moves: newMoves,
-            isLocked: true,
-          };
+          return { ...newState, moves: newMoves, isLocked: true };
         }
       }
 
@@ -129,7 +114,8 @@ export function useGame({ difficulty, theme, onMatch, onMismatch, onFlip, onWin 
   const restart = useCallback(() => {
     if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setGameState(initState());
-  }, [difficulty, theme]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [difficulty]);
 
   return { gameState, flipCard, restart };
 }

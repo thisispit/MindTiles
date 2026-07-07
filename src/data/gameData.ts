@@ -1,85 +1,88 @@
-import type { CardData, CardTheme, Difficulty } from '../types';
+import type { CardData, Difficulty } from '../types';
 
 export const DIFFICULTY_CONFIG: Record<Difficulty, { grid: number; label: string; description: string; pairs: number }> = {
-  focus: { grid: 4, label: 'Focus', description: '4×4 grid — A calm introduction to memory training.', pairs: 8 },
-  recall: { grid: 6, label: 'Recall', description: '6×6 grid — Test your pattern recognition.', pairs: 18 },
-  master: { grid: 8, label: 'Master', description: '8×8 grid — Challenge your working memory.', pairs: 32 },
-  legend: { grid: 10, label: 'Legend', description: '10×10 grid — The ultimate memory endurance test.', pairs: 50 },
-};
-
-export const THEME_LABELS: Record<CardTheme, string> = {
-  nature: 'Nature',
-  space: 'Space',
-  technology: 'Technology',
-  ocean: 'Ocean',
-  architecture: 'Architecture',
-  animals: 'Animals',
-  food: 'Food',
-  minimal: 'Minimal Icons',
-  abstract: 'Abstract',
-};
-
-// SVG symbol sets per theme — each entry is a unique symbol ID
-export const THEME_SYMBOLS: Record<CardTheme, string[]> = {
-  nature: ['leaf', 'tree', 'flower', 'mountain', 'sun', 'moon', 'cloud', 'rain', 'snowflake', 'wind',
-    'seed', 'fern', 'wave', 'fire', 'stone', 'branch', 'petal', 'root', 'hill', 'dew',
-    'forest', 'meadow', 'glacier', 'canyon', 'delta', 'spring', 'aurora', 'desert', 'reef', 'glade',
-    'valley', 'fjord', 'tundra', 'savanna', 'lagoon', 'moor', 'heath', 'steppe', 'fen', 'copse',
-    'grove', 'brook', 'mist', 'dune', 'cliff', 'pebble', 'pool', 'rime', 'haze', 'silt'],
-  space: ['planet', 'star', 'comet', 'galaxy', 'nebula', 'asteroid', 'rocket', 'satellite', 'orbit', 'cosmos',
-    'quasar', 'pulsar', 'void', 'event', 'corona', 'flare', 'nova', 'cluster', 'ring', 'debris',
-    'probe', 'station', 'capsule', 'booster', 'crater', 'mare', 'rift', 'surge', 'warp', 'singularity',
-    'lens', 'spectrum', 'photon', 'gamma', 'xray', 'flux', 'plasma', 'magnet', 'ion', 'muon',
-    'dark', 'light', 'redshift', 'blueshift', 'zenith', 'nadir', 'apsis', 'focus', 'axis', 'pole'],
-  technology: ['chip', 'circuit', 'node', 'data', 'signal', 'code', 'pixel', 'byte', 'wire', 'grid',
-    'server', 'cache', 'loop', 'stack', 'queue', 'tree', 'hash', 'link', 'port', 'bus',
-    'clock', 'gate', 'logic', 'bit', 'flag', 'mask', 'frame', 'packet', 'thread', 'core',
-    'shader', 'buffer', 'index', 'cursor', 'token', 'parse', 'compile', 'debug', 'deploy', 'sync',
-    'ping', 'trace', 'audit', 'patch', 'build', 'fork', 'merge', 'push', 'pull', 'branch'],
-  ocean: ['wave', 'coral', 'kelp', 'depth', 'tide', 'current', 'abyss', 'trench', 'shoal', 'crest',
-    'swell', 'surge', 'eddy', 'gyre', 'plume', 'brine', 'froth', 'foam', 'drift', 'lagoon',
-    'atoll', 'reef', 'bank', 'seamount', 'basin', 'sill', 'ridge', 'shelf', 'slope', 'plain',
-    'vent', 'spring', 'pool', 'inlet', 'cove', 'bay', 'strait', 'sound', 'estuary', 'delta',
-    'tidal', 'benthic', 'pelagic', 'abyssal', 'hadal', 'photic', 'aphotic', 'neritic', 'oceanic', 'littoral'],
-  architecture: ['arch', 'dome', 'tower', 'column', 'bridge', 'vault', 'spire', 'facade', 'portal', 'wall',
-    'beam', 'slab', 'truss', 'footing', 'lintel', 'pier', 'corbel', 'parapet', 'balcony', 'cornice',
-    'frieze', 'plinth', 'capital', 'keystone', 'voussoir', 'quoin', 'transom', 'mullion', 'soffit', 'coffer',
-    'atrium', 'rotunda', 'nave', 'apse', 'transept', 'narthex', 'porch', 'loggia', 'arcade', 'colonnade',
-    'peristyle', 'propylon', 'stoa', 'temenos', 'cella', 'pronaos', 'opisthodomos', 'peribolos', 'tempietto', 'pantheon'],
-  animals: ['eagle', 'wolf', 'fox', 'bear', 'deer', 'owl', 'hawk', 'crane', 'heron', 'falcon',
-    'lynx', 'otter', 'seal', 'whale', 'dolphin', 'shark', 'ray', 'turtle', 'salmon', 'trout',
-    'raven', 'dove', 'sparrow', 'swift', 'martin', 'swallow', 'finch', 'wren', 'robin', 'thrush',
-    'badger', 'mole', 'vole', 'shrew', 'stoat', 'weasel', 'pine', 'marten', 'polecat', 'ferret',
-    'bison', 'elk', 'moose', 'caribou', 'ibex', 'chamois', 'roe', 'fallow', 'muntjac', 'reindeer'],
-  food: ['bread', 'olive', 'citrus', 'berry', 'grain', 'herb', 'seed', 'root', 'bloom', 'leaf',
-    'fig', 'grape', 'peach', 'plum', 'pear', 'apple', 'quince', 'mango', 'lime', 'lemon',
-    'walnut', 'almond', 'hazel', 'chestnut', 'pine', 'pistachio', 'cashew', 'pecan', 'macadamia', 'brazil',
-    'ginger', 'turmeric', 'saffron', 'vanilla', 'cardamom', 'clove', 'pepper', 'cumin', 'fennel', 'thyme',
-    'basil', 'mint', 'sage', 'rosemary', 'oregano', 'tarragon', 'dill', 'parsley', 'chive', 'bay'],
-  minimal: ['circle', 'square', 'triangle', 'hex', 'cross', 'diamond', 'arrow', 'dot', 'line', 'curve',
-    'ring', 'arc', 'spiral', 'wave', 'grid', 'mesh', 'bar', 'dash', 'plus', 'minus',
-    'multiply', 'divide', 'equals', 'infinity', 'delta', 'sigma', 'pi', 'phi', 'omega', 'theta',
-    'alpha', 'beta', 'gamma', 'lambda', 'mu', 'nu', 'xi', 'rho', 'tau', 'upsilon',
-    'epsilon', 'zeta', 'eta', 'iota', 'kappa', 'chi', 'psi', 'nabla', 'partial', 'integral'],
-  abstract: ['vortex', 'flux', 'pulse', 'echo', 'ripple', 'bloom', 'fade', 'shift', 'drift', 'flow',
-    'surge', 'break', 'fold', 'twist', 'bend', 'warp', 'stretch', 'compress', 'expand', 'contract',
-    'merge', 'split', 'scatter', 'gather', 'radiate', 'converge', 'diverge', 'oscillate', 'resonate', 'decay',
-    'emerge', 'dissolve', 'crystallize', 'liquify', 'solidify', 'vaporize', 'condense', 'sublime', 'ionize', 'fuse',
-    'reflect', 'refract', 'diffract', 'scatter', 'absorb', 'emit', 'transmit', 'conduct', 'insulate', 'catalyze'],
+  focus:   { grid: 4,  label: 'Rookie',    description: '4×4 grid — A calm introduction to memory training.',   pairs: 8  },
+  recall:  { grid: 6,  label: 'Pro',       description: '6×6 grid — Test your pattern recognition.',             pairs: 18 },
+  master:  { grid: 8,  label: 'Master',    description: '8×8 grid — Challenge your working memory.',             pairs: 32 },
+  legend:  { grid: 10, label: 'Legend',    description: '10×10 grid — The ultimate memory endurance test.',      pairs: 50 },
 };
 
 /**
- * Generate a shuffled array of card pairs for the game
+ * Single colorful symbol set — each symbol has a unique vibrant color
+ * that pops against the dark background.
  */
-export function generateCards(pairs: number, theme: CardTheme): CardData[] {
-  const symbols = THEME_SYMBOLS[theme].slice(0, pairs);
+export const SYMBOLS: { id: string; color: string }[] = [
+  { id: 'leaf',        color: '#4ade80' }, // green
+  { id: 'flame',       color: '#f97316' }, // orange
+  { id: 'moon',        color: '#a78bfa' }, // violet
+  { id: 'sun',         color: '#fbbf24' }, // amber
+  { id: 'wave',        color: '#38bdf8' }, // sky
+  { id: 'mountain',    color: '#6ee7b7' }, // emerald
+  { id: 'star',        color: '#f472b6' }, // pink
+  { id: 'comet',       color: '#fb923c' }, // orange-light
+  { id: 'diamond',     color: '#67e8f9' }, // cyan
+  { id: 'bolt',        color: '#facc15' }, // yellow
+  { id: 'drop',        color: '#60a5fa' }, // blue
+  { id: 'spiral',      color: '#e879f9' }, // fuchsia
+  { id: 'hexagon',     color: '#34d399' }, // teal-green
+  { id: 'eye',         color: '#f87171' }, // red-light
+  { id: 'infinity',    color: '#818cf8' }, // indigo
+  { id: 'feather',     color: '#86efac' }, // light green
+  { id: 'cloud',       color: '#93c5fd' }, // blue-light
+  { id: 'crystal',     color: '#c084fc' }, // purple
+  { id: 'anchor',      color: '#22d3ee' }, // cyan
+  { id: 'tree',        color: '#a3e635' }, // lime
+  { id: 'arrow',       color: '#fb7185' }, // rose
+  { id: 'compass',     color: '#fcd34d' }, // yellow-light
+  { id: 'crown',       color: '#fda4af' }, // rose-light
+  { id: 'orbit',       color: '#7dd3fc' }, // sky-light
+  { id: 'planet',      color: '#d8b4fe' }, // purple-light
+  { id: 'snowflake',   color: '#bae6fd' }, // sky-pale
+  { id: 'flower',      color: '#f9a8d4' }, // pink-light
+  { id: 'hourglass',   color: '#fdba74' }, // orange-light
+  { id: 'key',         color: '#86efac' }, // green-light
+  { id: 'shield',      color: '#6366f1' }, // indigo
+  { id: 'prism',       color: '#e11d48' }, // rose
+  { id: 'nucleus',     color: '#06b6d4' }, // cyan-vivid
+  { id: 'clover',      color: '#16a34a' }, // green-vivid
+  { id: 'target',      color: '#dc2626' }, // red
+  { id: 'vortex',      color: '#7c3aed' }, // violet-vivid
+  { id: 'moth',        color: '#d97706' }, // amber-vivid
+  { id: 'lantern',     color: '#ea580c' }, // orange-vivid
+  { id: 'arc',         color: '#0284c7' }, // blue-vivid
+  { id: 'wave2',       color: '#0891b2' }, // cyan-vivid2
+  { id: 'lotus',       color: '#be185d' }, // pink-vivid
+  { id: 'bolt2',       color: '#ca8a04' }, // yellow-vivid
+  { id: 'seed',        color: '#15803d' }, // green-deep
+  { id: 'dna',         color: '#9333ea' }, // purple-vivid
+  { id: 'atom',        color: '#2563eb' }, // blue-vivid2
+  { id: 'ring',        color: '#db2777' }, // pink-vivid2
+  { id: 'web',         color: '#64748b' }, // slate
+  { id: 'cube',        color: '#0e7490' }, // cyan-deep
+  { id: 'arrow2',      color: '#b45309' }, // amber-deep
+  { id: 'triangle',    color: '#1d4ed8' }, // blue-deep
+  { id: 'dot',         color: '#be123c' }, // rose-deep
+];
+
+/**
+ * Get color for a symbol by its id
+ */
+export function getSymbolColor(symbolId: string): string {
+  return SYMBOLS.find(s => s.id === symbolId)?.color ?? '#14B8A6';
+}
+
+/**
+ * Generate shuffled card pairs
+ */
+export function generateCards(pairs: number): CardData[] {
+  const selected = SYMBOLS.slice(0, pairs);
   const cards: CardData[] = [];
 
-  symbols.forEach((symbol, index) => {
+  selected.forEach((sym, index) => {
     const pairId = `pair-${index}`;
     cards.push(
-      { id: `${pairId}-a`, pairId, symbol, isFlipped: false, isMatched: false },
-      { id: `${pairId}-b`, pairId, symbol, isFlipped: false, isMatched: false },
+      { id: `${pairId}-a`, pairId, symbol: sym.id, isFlipped: false, isMatched: false },
+      { id: `${pairId}-b`, pairId, symbol: sym.id, isFlipped: false, isMatched: false },
     );
   });
 

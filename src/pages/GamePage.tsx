@@ -7,7 +7,7 @@ import { useTimer } from '../hooks/useTimer';
 import { useSound } from '../hooks/useSound';
 import { CardSymbol } from '../components/CardSymbol';
 import { formatTime, recordSession, computeAccuracy } from '../utils/storage';
-import { DIFFICULTY_CONFIG } from '../data/gameData';
+import { DIFFICULTY_CONFIG, getSymbolColor } from '../data/gameData';
 import type { CardData } from '../types';
 import confetti from 'canvas-confetti';
 
@@ -32,33 +32,29 @@ function WinModal({ moves, timeSeconds, accuracy, bestTime, onPlayAgain, onHome 
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Backdrop */}
       <motion.div
         className="absolute inset-0"
-        style={{ background: 'rgba(11,15,20,0.75)', backdropFilter: 'blur(12px)' }}
+        style={{ background: 'rgba(11,15,20,0.8)', backdropFilter: 'blur(12px)' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       />
-
-      {/* Modal */}
       <motion.div
         className="relative z-10 w-full max-w-sm"
         initial={{ opacity: 0, y: 24, scale: 0.94 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ delay: 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          background: 'rgba(19, 26, 34, 0.95)',
+          background: 'rgba(19, 26, 34, 0.98)',
           backdropFilter: 'blur(24px)',
           border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: '24px',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(20,184,166,0.08)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
           padding: '36px 32px',
         }}
         role="dialog"
         aria-modal="true"
         aria-label="Game complete"
       >
-        {/* Icon */}
         <div className="flex justify-center mb-6">
           <div style={{
             width: 64, height: 64, borderRadius: '50%',
@@ -79,30 +75,25 @@ function WinModal({ moves, timeSeconds, accuracy, bestTime, onPlayAgain, onHome 
           {isNewBest ? '🏆 New personal best!' : 'Well played. Keep training.'}
         </p>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-8">
           {[
-            { label: 'Time', value: formatTime(timeSeconds) },
-            { label: 'Moves', value: moves.toString() },
-            { label: 'Accuracy', value: `${accuracy}%` },
+            { label: 'Time',      value: formatTime(timeSeconds) },
+            { label: 'Moves',     value: moves.toString() },
+            { label: 'Accuracy',  value: `${accuracy}%` },
             { label: 'Best Time', value: bestTime !== null ? formatTime(Math.min(bestTime, timeSeconds)) : formatTime(timeSeconds) },
           ].map(({ label, value }) => (
-            <div
-              key={label}
-              style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '12px',
-                padding: '16px',
-              }}
-            >
+            <div key={label} style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '12px',
+              padding: '16px',
+            }}>
               <p className="text-xs text-[#94A3B8] mb-1 font-medium tracking-wide">{label}</p>
               <p className="text-xl font-semibold text-[#F8FAFC]" style={{ letterSpacing: '-0.01em' }}>{value}</p>
             </div>
           ))}
         </div>
 
-        {/* Buttons */}
         <div className="flex flex-col gap-2.5">
           <button
             onClick={onPlayAgain}
@@ -114,10 +105,7 @@ function WinModal({ moves, timeSeconds, accuracy, bestTime, onPlayAgain, onHome 
           <button
             onClick={onHome}
             className="w-full py-3.5 rounded-xl text-sm font-medium text-[#94A3B8] transition-all duration-200 active:scale-[0.98]"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             Return Home
           </button>
@@ -137,11 +125,11 @@ interface MemoryCardProps {
 }
 
 function MemoryCard({ card, onClick, disabled, size }: MemoryCardProps) {
-  const isActive = card.isFlipped || card.isMatched;
+  const isActive  = card.isFlipped || card.isMatched;
+  const symColor  = getSymbolColor(card.symbol);
 
   return (
     <motion.div
-      className="card-scene"
       style={{ width: size, height: size }}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -149,62 +137,62 @@ function MemoryCard({ card, onClick, disabled, size }: MemoryCardProps) {
     >
       <button
         className="w-full h-full relative focus-visible:outline-none"
-        style={{ perspective: '1000px', background: 'none', border: 'none', padding: 0, cursor: disabled || card.isMatched ? 'default' : 'pointer' }}
+        style={{ perspective: '1000px', background: 'none', border: 'none', padding: 0,
+          cursor: disabled || card.isMatched ? 'default' : 'pointer' }}
         onClick={() => !disabled && !card.isMatched && onClick(card.id)}
-        aria-label={card.isMatched ? `Matched: ${card.symbol}` : card.isFlipped ? `Card showing ${card.symbol}` : 'Hidden card'}
+        aria-label={card.isMatched ? `Matched: ${card.symbol}` : card.isFlipped ? `Flipped: ${card.symbol}` : 'Hidden card'}
         aria-pressed={isActive}
         tabIndex={disabled || card.isMatched ? -1 : 0}
       >
         <motion.div
-          className="card-inner"
           animate={{ rotateY: isActive ? 180 : 0 }}
-          transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-          style={{ transformStyle: 'preserve-3d' }}
+          transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
+          style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d' }}
         >
-          {/* Front (question mark) */}
+          {/* Front — question mark */}
           <div
             className="card-face flex items-center justify-center"
             style={{
-              background: 'rgba(19, 26, 34, 0.9)',
+              background: 'rgba(19, 26, 34, 0.92)',
               border: '1px solid rgba(255,255,255,0.07)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
               backfaceVisibility: 'hidden',
+              borderRadius: 14,
             }}
           >
             <span
-              className="text-[#374151] font-light select-none"
-              style={{ fontSize: size * 0.35, lineHeight: 1 }}
+              className="text-[#2D3748] font-light select-none"
+              style={{ fontSize: size * 0.38, lineHeight: 1 }}
               aria-hidden="true"
-            >
-              ?
-            </span>
+            >?</span>
           </div>
 
-          {/* Back (symbol) */}
+          {/* Back — colorful symbol */}
           <div
             className="card-face card-back-face flex items-center justify-center"
             style={{
               background: card.isMatched
-                ? 'rgba(20, 184, 166, 0.08)'
-                : 'rgba(25, 33, 43, 0.95)',
+                ? `rgba(${hexToRgb(symColor)}, 0.08)`
+                : 'rgba(22, 30, 40, 0.98)',
               border: card.isMatched
-                ? '1px solid rgba(20,184,166,0.25)'
+                ? `1px solid rgba(${hexToRgb(symColor)}, 0.3)`
                 : '1px solid rgba(255,255,255,0.1)',
               boxShadow: card.isMatched
-                ? '0 0 20px rgba(20,184,166,0.1), 0 2px 8px rgba(0,0,0,0.3)'
-                : '0 2px 12px rgba(0,0,0,0.4)',
-              backfaceVisibility: 'hidden',
+                ? `0 0 24px rgba(${hexToRgb(symColor)}, 0.15), 0 2px 8px rgba(0,0,0,0.35)`
+                : '0 2px 10px rgba(0,0,0,0.45)',
+              borderRadius: 14,
               transform: 'rotateY(180deg)',
+              backfaceVisibility: 'hidden',
             }}
           >
             <motion.div
-              animate={card.isMatched ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+              animate={card.isMatched ? { scale: [1, 1.18, 1] } : { scale: 1 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
               <CardSymbol
                 symbol={card.symbol}
-                size={Math.round(size * 0.42)}
-                color={card.isMatched ? '#14B8A6' : '#8B9BB0'}
+                size={Math.round(size * 0.5)}
+                color={card.isMatched ? symColor : `rgba(${hexToRgb(symColor)}, 0.55)`}
               />
             </motion.div>
           </div>
@@ -212,6 +200,15 @@ function MemoryCard({ card, onClick, disabled, size }: MemoryCardProps) {
       </button>
     </motion.div>
   );
+}
+
+/** Convert hex color to "r,g,b" for rgba() usage */
+function hexToRgb(hex: string): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `${r},${g},${b}`;
 }
 
 // ── GamePage ───────────────────────────────────────────────────────────────
@@ -227,17 +224,13 @@ export function GamePage() {
   const handleWin = useCallback((moves: number, accuracy: number) => {
     resetTimer();
     playVictory();
-
-    // Confetti burst
     confetti({
-      particleCount: 80,
-      spread: 60,
+      particleCount: 90,
+      spread: 65,
       origin: { y: 0.5 },
-      colors: ['#14B8A6', '#F97316', '#F8FAFC', '#0ea5e9'],
+      colors: ['#14B8A6', '#F97316', '#f472b6', '#fbbf24', '#60a5fa', '#a78bfa'],
       disableForReducedMotion: true,
     });
-
-    // Save session
     const session = {
       id: Date.now().toString(),
       date: new Date().toISOString(),
@@ -247,116 +240,87 @@ export function GamePage() {
       won: true,
       accuracy,
     };
-    const newStats = recordSession(session, stats);
-    updateStats(newStats);
+    updateStats(recordSession(session, stats));
   }, [elapsed, gameConfig.difficulty, playVictory, resetTimer, stats, updateStats]);
 
   const { gameState, flipCard, restart } = useGame({
     difficulty: gameConfig.difficulty,
-    theme: gameConfig.theme,
     onFlip: () => {
       if (!gameState.gameStarted) startTimer();
       playFlip();
     },
     onMatch: playMatch,
-    onMismatch: () => {},
     onWin: handleWin,
   });
 
-  const handleRestart = () => {
-    resetTimer();
-    restart();
-  };
+  const handleRestart = () => { resetTimer(); restart(); };
 
-  // Compute card grid layout
+  // Card size based on grid + viewport
   const gridCols = config.grid;
   const cardSize = Math.min(
-    Math.floor((Math.min(window.innerWidth - 64, 720)) / gridCols) - 6,
-    80,
+    Math.floor((Math.min(window.innerWidth - 48, 740)) / gridCols) - 6,
+    84,
   );
 
   return (
-    <div
-      className="relative min-h-screen flex flex-col"
-      style={{ background: '#0B0F14' }}
-    >
+    <div className="relative min-h-screen flex flex-col" style={{ background: '#0B0F14' }}>
       <div className="noise-texture" aria-hidden="true" />
       <div className="vignette" aria-hidden="true" />
 
       {/* Top Bar */}
       <motion.header
         className="relative z-10 flex items-center justify-between px-6 py-4 border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(11,15,20,0.6)', backdropFilter: 'blur(12px)' }}
+        style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(11,15,20,0.7)', backdropFilter: 'blur(12px)' }}
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {/* Left */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('home')}
+          <button onClick={() => navigate('home')}
             className="flex items-center gap-2 text-[#94A3B8] hover:text-[#F8FAFC] transition-colors duration-200 text-sm"
-            aria-label="Go home"
-          >
+            aria-label="Go home">
             <ArrowLeft size={16} />
             <span className="hidden sm:inline">Home</span>
           </button>
           <div className="w-px h-4 bg-[rgba(255,255,255,0.08)]" />
-          <span className="text-[#F8FAFC] font-semibold text-sm" style={{ letterSpacing: '-0.01em' }}>
-            MindTiles
-          </span>
+          <span className="text-[#F8FAFC] font-semibold text-sm" style={{ letterSpacing: '-0.01em' }}>MindTiles</span>
         </div>
 
-        {/* Center — stats */}
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2 text-sm">
             <Timer size={14} className="text-[#94A3B8]" />
-            <span className="text-[#F8FAFC] font-mono font-medium tabular-nums">
-              {formatTime(elapsed)}
-            </span>
+            <span className="text-[#F8FAFC] font-mono font-medium tabular-nums">{formatTime(elapsed)}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <Hash size={14} className="text-[#94A3B8]" />
-            <span className="text-[#F8FAFC] font-mono font-medium tabular-nums">
-              {gameState.moves}
-            </span>
+            <span className="text-[#F8FAFC] font-mono font-medium tabular-nums">{gameState.moves}</span>
           </div>
         </div>
 
-        {/* Right */}
-        <button
-          onClick={handleRestart}
+        <button onClick={handleRestart}
           className="flex items-center gap-2 text-[#94A3B8] hover:text-[#F8FAFC] transition-colors duration-200 text-sm"
-          aria-label="Restart game"
-        >
+          aria-label="Restart game">
           <RotateCcw size={15} />
           <span className="hidden sm:inline">Restart</span>
         </button>
       </motion.header>
 
-      {/* Progress indicator */}
-      <motion.div
-        className="relative z-10 h-px"
-        style={{ background: 'rgba(255,255,255,0.04)' }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
+      {/* Progress bar */}
+      <div className="relative z-10 h-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
         <motion.div
           className="h-full"
           style={{ background: 'linear-gradient(90deg, #14B8A6, #0ea5e9)', transformOrigin: 'left' }}
           animate={{ scaleX: gameState.matchedPairs / gameState.totalPairs }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         />
-      </motion.div>
+      </div>
 
-      {/* Game Board */}
+      {/* Board */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center py-8 px-4">
-        {/* Level indicator */}
         <motion.div
-          className="mb-6 flex items-center gap-2"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+          className="mb-5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
           <span className="text-xs font-medium text-[#94A3B8] tracking-widest uppercase">
@@ -364,7 +328,6 @@ export function GamePage() {
           </span>
         </motion.div>
 
-        {/* Card grid */}
         <motion.div
           className="grid gap-1.5"
           style={{ gridTemplateColumns: `repeat(${gridCols}, ${cardSize}px)` }}
@@ -386,7 +349,6 @@ export function GamePage() {
         </motion.div>
       </main>
 
-      {/* Win Modal */}
       <AnimatePresence>
         {gameState.gameWon && (
           <WinModal
@@ -394,7 +356,7 @@ export function GamePage() {
             timeSeconds={elapsed}
             accuracy={computeAccuracy(gameState.moves, gameState.totalPairs)}
             bestTime={stats.bestTimeSeconds}
-            onPlayAgain={() => { handleRestart(); }}
+            onPlayAgain={handleRestart}
             onHome={() => navigate('home')}
           />
         )}
