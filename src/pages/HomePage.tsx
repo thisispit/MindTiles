@@ -1,0 +1,281 @@
+import { motion } from 'framer-motion';
+import { useApp } from '../context/AppContext';
+import { ParticleBackground } from '../components/ParticleBackground';
+
+// ── Tile definitions ───────────────────────────────────────────────────────
+
+interface NavTile {
+  id: string;
+  label: string;
+  sublabel: string;
+  page: 'game' | 'challenge' | 'journey' | 'studio';
+  position: 'tl' | 'tr' | 'bl' | 'br';
+  icon: React.ReactNode;
+}
+
+const BeginIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <path d="M10 7L21 14L10 21V7Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+  </svg>
+);
+
+const ChallengeIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <path d="M14 4L17 10L24 11L19 16L20 23L14 20L8 23L9 16L4 11L11 10L14 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+  </svg>
+);
+
+const JourneyIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <path d="M4 22L10 14L16 18L22 10L24 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="24" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+
+const StudioIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="4" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M14 3V7M14 21V25M3 14H7M21 14H25M6 6L8.8 8.8M19.2 19.2L22 22M6 22L8.8 19.2M19.2 8.8L22 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const tiles: NavTile[] = [
+  {
+    id: 'begin',
+    label: 'Begin',
+    sublabel: 'Start a new session',
+    page: 'game',
+    position: 'tl',
+    icon: <BeginIcon />,
+  },
+  {
+    id: 'challenge',
+    label: 'Challenge',
+    sublabel: 'Choose your difficulty',
+    page: 'challenge',
+    position: 'tr',
+    icon: <ChallengeIcon />,
+  },
+  {
+    id: 'journey',
+    label: 'Journey',
+    sublabel: 'Your progress & stats',
+    page: 'journey',
+    position: 'bl',
+    icon: <JourneyIcon />,
+  },
+  {
+    id: 'studio',
+    label: 'Studio',
+    sublabel: 'Themes & settings',
+    page: 'studio',
+    position: 'br',
+    icon: <StudioIcon />,
+  },
+];
+
+// ── Tile component ─────────────────────────────────────────────────────────
+
+function NavTileButton({ tile, index, onClick }: { tile: NavTile; index: number; onClick: () => void }) {
+  return (
+    <motion.button
+      key={tile.id}
+      initial={{ opacity: 0, y: 24, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        delay: 0.3 + index * 0.08,
+        duration: 0.45,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      whileHover={{
+        scale: 1.035,
+        y: -3,
+        transition: { duration: 0.22, ease: 'easeOut' },
+      }}
+      whileTap={{
+        scale: 0.97,
+        transition: { duration: 0.1 },
+      }}
+      onClick={onClick}
+      aria-label={`Navigate to ${tile.label}`}
+      className="group relative flex flex-col items-start justify-between p-6 w-full h-full text-left focus-visible:outline-none"
+      style={{
+        background: 'rgba(19, 26, 34, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        borderRadius: '20px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)',
+        cursor: 'pointer',
+        minHeight: '180px',
+      }}
+    >
+      {/* Background hover glow */}
+      <motion.div
+        className="absolute inset-0 rounded-[20px] opacity-0 group-hover:opacity-100"
+        style={{
+          background: 'rgba(255,255,255,0.025)',
+          transition: 'opacity 220ms ease-out',
+        }}
+      />
+
+      {/* Subtle top border highlight on hover */}
+      <div
+        className="absolute top-0 left-6 right-6 h-px opacity-0 group-hover:opacity-100"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(20,184,166,0.3), transparent)',
+          transition: 'opacity 220ms ease-out',
+        }}
+      />
+
+      {/* Icon */}
+      <div
+        className="relative z-10 flex items-center justify-center w-11 h-11 rounded-xl mb-auto"
+        style={{
+          background: 'rgba(20,184,166,0.08)',
+          border: '1px solid rgba(20,184,166,0.15)',
+          color: '#14B8A6',
+          transition: 'background 220ms ease-out, border-color 220ms ease-out',
+        }}
+      >
+        {tile.icon}
+      </div>
+
+      {/* Text */}
+      <div className="relative z-10 mt-8">
+        <p
+          className="text-xl font-semibold text-[#F8FAFC] mb-1"
+          style={{ letterSpacing: '-0.01em' }}
+        >
+          {tile.label}
+        </p>
+        <p className="text-sm text-[#94A3B8] font-light leading-relaxed">
+          {tile.sublabel}
+        </p>
+      </div>
+
+      {/* Arrow indicator */}
+      <div
+        className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 text-[#14B8A6]"
+        style={{ transition: 'opacity 220ms ease-out, transform 220ms ease-out' }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+    </motion.button>
+  );
+}
+
+// ── HomePage ───────────────────────────────────────────────────────────────
+
+export function HomePage() {
+  const { navigate } = useApp();
+
+  return (
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      style={{ background: '#0B0F14' }}>
+
+      {/* Layered backgrounds */}
+      <ParticleBackground />
+      <div className="noise-texture" aria-hidden="true" />
+      <div className="vignette" aria-hidden="true" />
+
+      {/* Content */}
+      <main className="relative z-10 flex flex-col items-center w-full max-w-2xl mx-auto px-6 py-12">
+
+        {/* Logo & Heading */}
+        <motion.div
+          className="flex flex-col items-center mb-14"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          {/* Logomark */}
+          <motion.div
+            className="mb-5"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <rect x="2" y="2" width="19" height="19" rx="5" fill="#14B8A6" />
+              <rect x="27" y="2" width="19" height="19" rx="5" fill="#14B8A6" opacity="0.5" />
+              <rect x="2" y="27" width="19" height="19" rx="5" fill="#14B8A6" opacity="0.5" />
+              <rect x="27" y="27" width="19" height="19" rx="5" fill="#14B8A6" />
+            </svg>
+          </motion.div>
+
+          <motion.h1
+            className="text-[42px] font-bold tracking-tight text-[#F8FAFC] mb-3"
+            style={{ letterSpacing: '-0.03em', lineHeight: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+          >
+            MINDTILES
+          </motion.h1>
+
+          <motion.p
+            className="text-[#94A3B8] text-base font-light tracking-wide"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+          >
+            Sharpen your memory. One match at a time.
+          </motion.p>
+        </motion.div>
+
+        {/* 2×2 Tile Grid */}
+        <div
+          className="grid grid-cols-2 gap-3 w-full mb-10"
+          role="navigation"
+          aria-label="Main navigation"
+        >
+          {tiles.map((tile, index) => (
+            <NavTileButton
+              key={tile.id}
+              tile={tile}
+              index={index}
+              onClick={() => navigate(tile.page)}
+            />
+          ))}
+        </div>
+
+        {/* Quote */}
+        <motion.p
+          className="text-center text-sm text-[#4A5568] font-light tracking-widest uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          style={{ letterSpacing: '0.12em' }}
+        >
+          Every tile tells a story.
+        </motion.p>
+      </main>
+
+      {/* Footer */}
+      <motion.footer
+        className="relative z-10 flex items-center gap-4 py-6 text-xs text-[#374151]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.5 }}
+      >
+        <span>MindTiles v1.0</span>
+        <span>·</span>
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 hover:text-[#94A3B8] transition-colors duration-200"
+          aria-label="GitHub"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <span>·</span>
+        <span>Built with React + Vite</span>
+      </motion.footer>
+    </div>
+  );
+}
