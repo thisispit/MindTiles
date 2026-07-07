@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Volume2, VolumeX, Zap, ZapOff, Trash2, Info, Settings2, ExternalLink, Mail } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, Zap, ZapOff, Trash2, Info, Settings2, Mail } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 function GithubMark({ className }: { className?: string }) {
