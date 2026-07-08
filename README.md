@@ -1,4 +1,4 @@
-# MindTiles
+# 🧠 MindTiles
 
 > **Sharpen your memory. One match at a time.**
 
@@ -6,7 +6,23 @@ A premium memory card game built with React, Vite, TypeScript, Tailwind CSS, and
 
 ---
 
-## Features
+## 📸 Screenshots
+
+<p align="center">
+  <img src="public/screenshot-home.png" alt="MindTiles Home Screen" width="320" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="public/screenshot-gameplay.png" alt="MindTiles Gameplay" width="320" />
+</p>
+
+<p align="center">
+  <em>Home Screen — Clean, purposeful navigation</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>Gameplay — 4×4 grid with matched pairs</em>
+</p>
+
+---
+
+## ✨ Features
 
 - 🎴 **4 Difficulty Levels** — Focus (4×4), Recall (6×6), Master (8×8), Legend (10×10)
 - 🎨 **9 Card Themes** — Nature, Space, Technology, Ocean, Architecture, Animals, Food, Minimal, Abstract
@@ -16,7 +32,7 @@ A premium memory card game built with React, Vite, TypeScript, Tailwind CSS, and
 - 🎉 **Confetti Win Modal** — Glassmorphism overlay with session stats
 - ✨ **Micro-interactions** — Stagger animations, hover effects, page transitions
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **React 19** + **TypeScript**
 - **Vite 8** — build tooling
@@ -26,7 +42,7 @@ A premium memory card game built with React, Vite, TypeScript, Tailwind CSS, and
 - **canvas-confetti** — win celebration
 - **localStorage** — persistent stats
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
 npm install
@@ -35,7 +51,7 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173)
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 src/
@@ -48,6 +64,4 @@ src/
 └── utils/            # localStorage, formatting, scoring
 ```
 
----
 
-Built with ❤️ using React + Vite
